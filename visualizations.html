@@ -1,0 +1,140 @@
+<html>
+<head>
+    <title>Project 2</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+
+    <div>
+        <h1>Visualization 1: </h1>
+        <br><br>
+        <select onchange="toggle.call(this, event)">
+            <option value="End of 1st Year">End of 1st Year</option>
+            <option value="End of 2nd Year">End of 2nd Year</option>
+            <option value="Upon Enrollment">Upon Enrollment</option>
+            <option value="Other">Other</option>
+        </select>
+        <br><br><br>
+        <div id="vis1"></div>
+    </div>
+
+
+
+
+
+    <script type="text/javascript">
+        // Global vars ***********************
+        // set the dimensions and margins of the graph
+        var margin = {top: 20, right: 20, bottom: 30, left:50};
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+
+        // set the ranges
+        var x = d3.scaleLinear().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+        var yMale = d3.scaleLinear().range([height, 0]);
+
+        var xVal = "year";
+        var yVal = "retention rate";
+        var yFemaleVal = "FemaleRetentionRate";
+        var yMaleVal = "MaleRetentionRate";
+
+        // Generate Plots
+        var vis1 = generate_svg("vis1");
+        load_and_plot(vis1, "End of 1st Year");
+
+        // Helper functions ***********************
+        function generate_svg(location) {
+            return d3.select("#" + location).append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        }
+
+        function load_and_plot(svg, key) {
+            d3.csv("/processed-data/retention/" + key + ".csv", function (error, data) {
+                if (error) throw error;
+
+                console.log(data);
+
+                fix_data(data);
+
+                // Scale the range of the data
+                x.domain(d3.extent(data, function (d) {
+                    return parseInt(d[xVal]);
+                }));
+                y.domain([0, d3.max(data, function (d) {
+                    return parseFloat(d[yFemaleVal]);
+                })]);
+                yMale.domain([0, d3.max(data, function (d) {
+                    return parseFloat(d[yMaleVal]);
+                })]);
+
+                build_line(svg, data, yFemaleVal, "pink");
+                build_line(svg, data, yMaleVal, "blue");
+
+                // Add the X Axis
+                svg.append("g")
+                    .attr("transform", "translate(0, " + height + ")")
+                    .call(d3.axisBottom(x));
+
+                // Add the Y axis
+                svg.append("g")
+                    .call(d3.axisLeft(y));
+
+                // Add text labels
+                var xLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text(xVal)
+                    .attr("x", width -20)
+                    .attr("y", height - 10);
+
+                var yLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text(yVal)
+                    .attr("x", 10)
+                    .attr("y", -10);
+
+                // Title for plot, reference: http://www.d3noob.org/2013/01/adding-title-to-your-d3js-graph.html
+                svg.append("text")
+                    .attr("x", (width/2))
+                    .attr("y", 0 - (margin.top / 3))
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "17px")
+                    .text(key)
+            })
+        }
+
+        function build_line(svg, data, yVal, color) {
+            var	line = d3.line()
+                .x(function(d) { return x(d[xVal]); })
+                .y(function(d) { return y(d[yVal]); });
+
+            svg.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", color)
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-width", 1.5)
+                .attr("d", line)
+        }
+
+        function fix_data(data) {
+            // Sort data, reference: http://www.javascriptkit.com/javatutors/arraysort2.shtml
+            data.sort(function (a, b) {
+                return parseInt(a[xVal])-parseInt(b[xVal])
+            });
+        }
+
+        function toggle(selection) {
+            d3.select("#vis1").select("svg").remove();
+            vis1 = generate_svg("vis1");
+            load_and_plot(vis1, this.options[this.selectedIndex].text)
+        }
+    </script>
+</body>
+
+</html>

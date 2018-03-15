@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3e91227d-346f-4d59-b74d-63e88c6d208c" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/~$NCWIT_DataV2.xlsx" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.ipynb_checkpoints/DataProcessing-checkpoint.ipynb" afterPath="$PROJECT_DIR$/.ipynb_checkpoints/DataProcessing-checkpoint.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DataProcessing.ipynb" afterPath="$PROJECT_DIR$/DataProcessing.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/processed-data/retention/End of 1st Year.csv" afterPath="$PROJECT_DIR$/processed-data/retention/End of 1st Year.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/processed-data/retention/End of 2nd Year.csv" afterPath="$PROJECT_DIR$/processed-data/retention/End of 2nd Year.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/processed-data/retention/Other.csv" afterPath="$PROJECT_DIR$/processed-data/retention/Other.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/processed-data/retention/Upon Enrollment.csv" afterPath="$PROJECT_DIR$/processed-data/retention/Upon Enrollment.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/processed-data/retention/university closed.csv" afterPath="$PROJECT_DIR$/processed-data/retention/university closed.csv" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -194,12 +199,12 @@
       <option name="presentableId" value="Default" />
       <updated>1521058302482</updated>
       <workItem from="1521058306818" duration="490000" />
-      <workItem from="1521071815997" duration="313000" />
+      <workItem from="1521071815997" duration="316000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="803000" />
+    <option name="totallyTimeSpent" value="806000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />

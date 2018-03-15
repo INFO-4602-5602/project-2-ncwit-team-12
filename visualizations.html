@@ -1,0 +1,105 @@
+<html>
+<head>
+    <title>Project 2</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        // Global vars ***********************
+        // set the dimensions and margins of the graph
+        var margin = {top: 20, right: 20, bottom: 30, left:50};
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+
+        // set the ranges
+        var x = d3.scaleLinear().range([0, width]);
+        var y = d3.scaleLinear().range([height, 0]);
+
+        var xVal = "x";
+        var yVal = "y";
+
+
+        // Helper functions ***********************
+        function generate_svg(location){
+            return d3.select(location).append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + ","  + margin.top + ")");
+        }
+
+        function build_line(svg, data) {
+            var	line = d3.line()
+                .x(function(d) { return x(d[xVal]); })
+                .y(function(d) { return y(d[yVal]); });
+
+            svg.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "blue")
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-width", 1.5)
+                .attr("d", line)
+        }
+
+        function load_and_plot(svg, key) {
+            d3.csv("/processed-data/" + key + ".csv", function (error, data) {
+                if (error) throw error;
+
+                fix_data(data);
+
+                // Scale the range of the data
+                x.domain(d3.extent(data, function (d) {
+                    return parseFloat(d[xVal]);
+                }));
+                y.domain([0, d3.max(data, function (d) {
+                    return parseFloat(d[yVal]);
+                })]);
+
+                build_line(svg, data);
+
+                // Add the X Axis
+                svg.append("g")
+                    .attr("transform", "translate(0, " + height + ")")
+                    .call(d3.axisBottom(x));
+
+                // Add the Y axis
+                svg.append("g")
+                    .call(d3.axisLeft(y));
+
+                // Add text labels
+                var xLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text(xVal)
+                    .attr("x", width -20)
+                    .attr("y", height - 10);
+
+                var yLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text(yVal)
+                    .attr("x", 10)
+                    .attr("y", -10);
+
+                // Title for plot, reference: http://www.d3noob.org/2013/01/adding-title-to-your-d3js-graph.html
+                svg.append("text")
+                    .attr("x", (width/2))
+                    .attr("y", 0 - (margin.top / 2))
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "15px")
+                    .text("Anscombe " + key)
+
+            })
+        }
+
+        function fix_data(data) {
+            // Sort data, reference: http://www.javascriptkit.com/javatutors/arraysort2.shtml
+            data.sort(function (a, b) {
+                return a[xVal]-b[xVal]
+            });
+        }
+    </script>
+</body>
+
+</html>

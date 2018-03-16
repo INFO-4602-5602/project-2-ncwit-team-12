@@ -2,6 +2,14 @@
 <head>
     <title>Project 2</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+        .legend {
+            font-size: 12px;
+        }
+        rect {
+            stroke-width: 2;
+        }
+    </style>
 </head>
 
 <body>
@@ -32,11 +40,11 @@
 
         // set the ranges
         var x = d3.scaleLinear().range([0, width]);
+        var y0 = d3.scaleLinear().range([height, 0]);
         var y = d3.scaleLinear().range([height, 0]);
-        var yMale = d3.scaleLinear().range([height, 0]);
 
         var xVal = "year";
-        var yVal = "retention rate";
+        var yVal = "percent retention (Blue=Male; Pink=Female)";
         var yFemaleVal = "FemaleRetentionRate";
         var yMaleVal = "MaleRetentionRate";
 
@@ -65,15 +73,12 @@
                 x.domain(d3.extent(data, function (d) {
                     return parseInt(d[xVal]);
                 }));
-                y.domain([0, d3.max(data, function (d) {
-                    return parseFloat(d[yFemaleVal]);
-                })]);
-                yMale.domain([0, d3.max(data, function (d) {
-                    return parseFloat(d[yMaleVal]);
-                })]);
+                maxes = get_y_order(data);
+                y0.domain([0, maxes[0]]);
+                y.domain([0, maxes[1]]);
 
-                build_line(svg, data, yFemaleVal, "pink");
                 build_line(svg, data, yMaleVal, "blue");
+                build_line(svg, data, yFemaleVal, "pink");
 
                 // Add the X Axis
                 svg.append("g")
@@ -95,7 +100,7 @@
                     .attr("class", "label")
                     .text(yVal)
                     .attr("x", 10)
-                    .attr("y", -10);
+                    .attr("y", -5);
 
                 // Title for plot, reference: http://www.d3noob.org/2013/01/adding-title-to-your-d3js-graph.html
                 svg.append("text")
@@ -104,6 +109,10 @@
                     .attr("text-anchor", "middle")
                     .style("font-size", "17px")
                     .text(key)
+
+                // Add legend
+                var legend = svg.selectAll(".legend")
+                                .data()
             })
         }
 
@@ -133,6 +142,21 @@
             d3.select("#vis1").select("svg").remove();
             vis1 = generate_svg("vis1");
             load_and_plot(vis1, this.options[this.selectedIndex].text)
+        }
+
+        function get_y_order(data){
+            male = d3.max(data, function (d) {
+                return parseFloat(d[yMaleVal]);
+            });
+            female = d3.max(data, function (d) {
+                return parseFloat(d[yFemaleVal]);
+            });
+
+            maleGreater = male > female;
+            higher_val =  maleGreater ? male : female;
+            lower_val =  maleGreater ? female : male;
+
+            return [lower_val, higher_val]
         }
     </script>
 </body>

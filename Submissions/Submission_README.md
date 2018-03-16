@@ -16,7 +16,9 @@ being represented less than others to hopefully craft new strategies for both br
 The visual is a simple pie chart, with each ethnicity represented by a wedge.
 When one of the wedges is hovered over, it displays the number of students below the visual.
 **To Run**
-To create the dataset used in the visual, run the main.py file with the raw dataset, you may need to install Python's Pandas first
+To create the dataset used in the visual, run the create_vis2_dataset.py file with the raw dataset,
+you may need to install Python's Pandas first
+
 Then open up a server and run vis2.html
 
 #### Visualization 3: Graduation trends by gender and when a student declares their major  

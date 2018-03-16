@@ -4,7 +4,10 @@
 ### Team 12
 
 #### Visualization 1  
-<enter text about Vis 1 here>
+Visualization 1 displays the graduation rate year-by-year of students who declared their major at different times in college. We then split this up by male and female students. You can select which data set you'd like to see by selecting from the dropdown and can see the specific graduation rate by hovering over the data. 
+
+**To Run**
+Run a server and navigate to `visualization1.hmtl`
 
 #### Visualization 2  
 <enter text about Vis 2 here>

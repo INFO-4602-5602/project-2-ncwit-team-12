@@ -4,7 +4,10 @@
 ### Team 12
 
 #### Visualization 1  
-Visualization 1 displays the graduation rate year-by-year of students who declared their major at different times in college. We then split this up by male and female students. You can select which data set you'd like to see by selecting from the dropdown and can see the specific graduation rate by hovering over the data. 
+Visualization 1 displays the retention rate year-by-year of students who declared their major at different times in college. We then split this up by male and female students. You can select which data set you'd like to see by selecting from the dropdown and can see the specific graduation rate by hovering over the data. 
+
+**Data**
+To get the data, we manipulated the original datafile and split it based on the 4 different time periods that colleges allowed their students to declare their major (Upon Enrollment, End of 1st Year, End of 2nd Year and Other). From there we calculated retention as (#Total Students - #New Enrolled - #Transfer)/#Total Students for each gender. There were some inconsistencies with the data (such as there being more new enrolled students than total students for certain years in the Upon Enrollment Categories). This resulted in a negative retention rate which we replaced as zero.
 
 **To Run**
 Run a server and navigate to `visualization1.hmtl`

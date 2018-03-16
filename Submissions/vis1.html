@@ -1,0 +1,203 @@
+<html>
+<head>
+    <title>Project 2</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style>
+        .legend {
+            font-size: 12px;
+        }
+        rect {
+            stroke-width: 2;
+        }
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            padding: 2px;
+            font: 14px sans-serif;
+            background: Thistle;
+            border: 0px;
+            pointer-events: none;
+            color: Snow;
+        }
+        circle {
+          fill: yellow;
+          opacity: .25;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <h1>Visualization 1: </h1>
+        <br><br>
+        <select onchange="toggle.call(this, event)">
+            <option value="End of 1st Year">End of 1st Year</option>
+            <option value="End of 2nd Year">End of 2nd Year</option>
+            <option value="Upon Enrollment">Upon Enrollment</option>
+            <option value="Other">Other</option>
+        </select>
+        <br><br><br>
+        <div id="vis1"></div>
+    </div>
+
+
+
+
+
+    <script type="text/javascript">
+        // Global vars ***********************
+        // set the dimensions and margins of the graph
+        var margin = {top: 20, right: 20, bottom: 30, left:50};
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
+
+        // set the ranges
+        var x = d3.scaleLinear().range([0, width]);
+        var y0 = d3.scaleLinear().range([height, 0]);
+        var y = d3.scaleLinear().range([height, 0]);
+
+        var xVal = "year";
+        var yVal = "percent retention (Blue=Male; Pink=Female)";
+        var yFemaleVal = "FemaleRetentionRate";
+        var yMaleVal = "MaleRetentionRate";
+
+        // Generate Plots
+        var vis1 = generate_svg("vis1");
+        load_and_plot(vis1, "End of 1st Year");
+
+        // Helper functions ***********************
+        function generate_svg(location) {
+            return d3.select("#" + location).append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        }
+
+        function load_and_plot(svg, key) {
+            d3.csv("/processed-data/retention/" + key + ".csv", function (error, data) {
+                if (error) throw error;
+
+                fix_data(data);
+
+                // Scale the range of the data
+                x.domain(d3.extent(data, function (d) {
+                    return parseInt(d[xVal]);
+                }));
+                maxes = get_y_order(data);
+                y0.domain([0, maxes[0]]);
+                y.domain([0, maxes[1]]);
+
+                build_line(svg, data, yMaleVal, "blue");
+                build_line(svg, data, yFemaleVal, "pink");
+
+                // Add the X Axis
+                svg.append("g")
+                    .attr("transform", "translate(0, " + height + ")")
+                    .call(d3.axisBottom(x));
+
+                // Add the Y axis
+                svg.append("g")
+                    .call(d3.axisLeft(y));
+
+                // Add text labels
+                var xLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text(xVal)
+                    .attr("x", width -20)
+                    .attr("y", height - 10);
+
+                var yLabel = svg.append("text")
+                    .attr("class", "label")
+                    .text(yVal)
+                    .attr("x", 10)
+                    .attr("y", -5);
+
+                // Title for plot, reference: http://www.d3noob.org/2013/01/adding-title-to-your-d3js-graph.html
+                svg.append("text")
+                    .attr("x", (width/2))
+                    .attr("y", 0 - (margin.top / 3))
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "17px")
+                    .text(key)
+
+                // Add legend
+                var legend = svg.selectAll(".legend")
+                                .data()
+            })
+        }
+
+        function build_line(svg, data, yVal, color) {
+            var	line = d3.line()
+                .x(function(d) { return x(d[xVal]); })
+                .y(function(d) { return y(d[yVal]); });
+
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+            svg.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", color)
+                .attr("stroke-linejoin", "round")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-width", 4)
+                .attr("d", line)
+            svg.selectAll("dot")
+               .data(data)
+             .enter().append("circle")
+               .attr("r", 5)
+               .attr("cx", function(d) { return x(d.year); })
+               .attr("cy", function(d) { return y(d[yVal]); })
+               .on("mouseover", function(d) {
+                 div.transition()
+                   .duration(200)
+                   .style("opacity", .9);
+                 div.html(d.year + "<br/>" + "MaleRetentionRate" + ": " + precise(d.MaleRetentionRate) + "<br/>" + "Female Retention Rate" + ": " + precise(d.FemaleRetentionRate))
+                   .style("left", (d3.event.pageX) + "px")
+                   .style("top", (d3.event.pageY - 28) + "px");
+                 })
+               .on("mouseout", function(d) {
+                 div.transition()
+                   .duration(500)
+                   .style("opacity", 0);
+                 });
+
+        }
+
+        function fix_data(data) {
+            // Sort data, reference: http://www.javascriptkit.com/javatutors/arraysort2.shtml
+            data.sort(function (a, b) {
+                return parseInt(a[xVal])-parseInt(b[xVal])
+            });
+        }
+
+        function toggle(selection) {
+            d3.select("#vis1").select("svg").remove();
+            vis1 = generate_svg("vis1");
+            load_and_plot(vis1, this.options[this.selectedIndex].text)
+        }
+
+        function get_y_order(data){
+            male = d3.max(data, function (d) {
+                return parseFloat(d[yMaleVal]);
+            });
+            female = d3.max(data, function (d) {
+                return parseFloat(d[yFemaleVal]);
+            });
+
+            maleGreater = male > female;
+            higher_val =  maleGreater ? male : female;
+            lower_val =  maleGreater ? female : male;
+
+            return [lower_val, higher_val]
+        }
+        function precise(x) {
+          return Number.parseFloat(x).toPrecision(2);
+        }
+    </script>
+</body>
+
+</html>

@@ -9,8 +9,15 @@ Visualization 1 displays the graduation rate year-by-year of students who declar
 **To Run**
 Run a server and navigate to `visualization1.hmtl`
 
-#### Visualization 2  
-<enter text about Vis 2 here>
+#### Visualization 2: Comparing number of female ethnic students in the 2015-2016 school year 
+Visual 2 looked into comparing the 6 ethnicities given in the dataset (Asian, Black/African American, Hispanic, Alaskan/Native
+American, and Islanders) in the 2015-2016 school year. The visual was made with the intent goal of seeing which ethnicities are
+being represented less than others to hopefully craft new strategies for both bringing in and retaining those students.
+The visual is a simple pie chart, with each ethnicity represented by a wedge.
+When one of the wedges is hovered over, it displays the number of students below the visual.
+**To Run**
+To create the dataset used in the visual, run the main.py file with the raw dataset, you may need to install Python's Pandas first
+Then open up a server and run vis2.html
 
 #### Visualization 3: Graduation trends by gender and when a student declares their major  
 This visualization helps to answer several questions: Are the number of graduates 

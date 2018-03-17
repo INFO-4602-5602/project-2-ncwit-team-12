@@ -1,0 +1,192 @@
+<html>
+<head>
+    <title>Project 2 Viz 2</title>
+    <link rel="stylesheet" type="text/css" href="project1.css"></link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!--Put your D3 import statement between these two lines-->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <!--Put your D3 import statement between these two lines-->
+
+    <style>
+        .legend {
+            font-size: 12px;
+        }
+        rect {
+            stroke-width: 2;
+        }
+        #chart {
+            height: 30px;
+            width: 30px;
+        }
+        .tooltip {
+            background: #eee;
+            box-shadow: 0 0 5px #999999;
+            color: #333;
+            display: none;
+            font-size: 12px;
+            left: 80px;
+            padding: 10px;
+            position: absolute;
+            text-align: center;
+            top: 250px;
+            width: 50px;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+<div id="piechart">
+    <h3>Pie chart comparing ethnicities in Computing Majors in from 2015-2016 </h3>
+</div>
+
+<div id="chart">
+</div>
+
+<script type="text/javascript">
+
+    /*********************************************************************
+
+    Code written by Julio Lopez. Project Group #12
+
+    A lot of help was put into zeroviscosity.com's piechart tutorial
+    Used a little bit of legacy code from project 1 to help relearn d3 and apply new feature
+    Getting the piechart set up: http://zeroviscosity.com/d3-js-step-by-step/step-1-a-basic-pie-chart
+    Creating the legend: http://zeroviscosity.com/d3-js-step-by-step/step-3-adding-a-legend
+
+    **********************************************************************/
+
+    var vals = ['-', 'Asian', 'Black/African American', 'Hispanics', 'American Indian/Alaska Native', 'Native Hawaiian/Other Pacific Islander', 'White']; // List of data attributes
+    var asian = vals[1];
+    var black = vals[2];
+    var hispanic = vals[3];
+    var native = vals[4];
+    var islander = vals[5];
+    var white = vals[6];
+
+    // set the dimensions and margins of the graph
+    var margin = {top:100, right: 20, bottom: 30, left: 100};
+    var width = 480 - margin.left - margin.right;
+    var height = 300 - margin.top - margin.bottom;
+    var radius = Math.min(width, height)/2;
+
+    // Create the dimensions of the legend.
+    var legendRectSize = 18;
+    var legendSpacing = 4;
+
+    // set the ranges
+    var x = d3.scaleLinear().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
+    // Creates the svg to append the piechart to
+    var svg = d3.select("#piechart").append("svg")
+        .attr("width",  width + margin.left + margin.right)
+        .attr("height", height+ margin.top  + margin.bottom)
+        .append("g")
+        .attr("transform", "translate("+margin.left + "," + margin.top + ")");
+
+    var tooltip = d3.select('#chart')
+        .append('div')
+        .attr('class', 'tooltip');
+        tooltip.append('div')
+        .attr('class', 'count');
+
+    /******
+     Opens up the dataset created by the python script
+     README: Make sure you run the python script FIRST to extract
+     the necessary data from the raw .csv file
+     ******/
+    d3.csv("2015-2016_ethnicity_data.csv", function(error, data){
+        if (error) throw error;
+
+        // Data parsed as strings, must convert them to numbers or bad things happen
+        data.forEach(function(d){
+            d[asian] = +d[asian];
+            d[black] = +d[black];
+            d[hispanic] = +d[hispanic];
+            d[native] = +d[native];
+            d[islander] = +d[islander];
+            d[white] = +d[white];
+        });
+
+        // Using a little help from Project 1 and https://stackoverflow.com/questions/27177755/sum-of-columns-in-csv-using-d3
+        // Sums the columns of the dataset.
+        var dataSummed=[
+            {ethnicity:'Asian', count:d3.sum(data, function(d){return d[asian];})},
+            {ethnicity:'Black', count:d3.sum(data, function(d){return d[black];})},
+            {ethnicity:'Hispanic', count:d3.sum(data, function(d){return d[hispanic];})},
+            {ethnicity:'Native', count:d3.sum(data, function(d){return d[native];})},
+            {ethnicity:'Islander', count:d3.sum(data, function(d){return d[islander];})},
+            {ethnicity:'White', count:d3.sum(data, function(d){return d[white];})}
+        ];
+
+        // Create the arc dimensions of the piechart
+        var arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius);
+
+        /**
+         Help on mouseover and mouseout from:
+         https://gist.github.com/cnaithani/49e867fef1da4714760928dd26f49485
+        **/
+        var arcOver = d3.arc().innerRadius(0).outerRadius(radius + 10);
+
+        var pie = d3.pie()
+            .value(function(d){ return d.count; })
+            .sort(null);
+
+        // Sets the values of the colors
+        var color = d3.scaleOrdinal()
+            .range(['#C41908', '#AA00A0', '#FFA208', '#33AF01', '#B1F1f2', '#D3CDFF']);
+
+        svg.selectAll('path')
+            .data(pie(dataSummed))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function(d) {
+                return color(d.data.ethnicity);
+            })
+            // Mouseover and mouseleave help from:
+            // https://bl.ocks.org/cflavs/ff1c6005fd7edad32641
+            .on("mouseover", function(d){
+                d3.select(this).attr('d', arcOver);
+                tooltip.select('.count').html(d.data.count);
+                tooltip.style('display', 'block');
+            })
+            .on("mouseleave", function(){
+                d3.select(this).attr('d', arc);
+                tooltip.style('display', 'none');
+            });
+
+        var legend = svg.selectAll('.legend')
+            .data(color.domain())
+            .enter()
+            .append('g')
+            .attr('class', 'legend')
+            .attr('transform', function(d, i) {
+                var height = legendRectSize + legendSpacing - 50;
+                var offset =  height * color.domain().length / 2;
+                var horz = 6 * legendRectSize ;
+                var vert = i * height - offset/1.5;
+                return 'translate(' + horz + ',' + vert + ')';
+            });
+
+        legend.append('rect')
+            .attr('width', legendRectSize)
+            .attr('height', legendRectSize)
+            .style('fill', color)
+            .style('stroke', color);
+
+        legend.append('text')
+            .attr('x', legendRectSize + legendSpacing)
+            .attr('y', legendRectSize - legendSpacing)
+            .text(function(d) { return d; });
+    });
+
+
+</script>
+</body>
+
+
+</html>

@@ -23,21 +23,43 @@
           fill: yellow;
           opacity: .25;
         }
+        .male {
+          color: blue;
+          font-size: 40;
+        }
+        .female {
+          color: pink;
+          font-size: 40;
+        }
+        .select-block {
+          float: left;
+        }
+        .legend-block {
+          float: right;
+        }
     </style>
 </head>
 
-<body>
+<body style="
+    margin-left: 32px;
+    margin-right: 32px;
+">
 
     <div>
         <h1>Visualization 1: </h1>
         <br><br>
-        <select onchange="toggle.call(this, event)">
+        <select onchange="toggle.call(this, event)" class="select-block">
             <option value="End of 1st Year">End of 1st Year</option>
             <option value="End of 2nd Year">End of 2nd Year</option>
             <option value="Upon Enrollment">Upon Enrollment</option>
             <option value="Other">Other</option>
         </select>
         <br><br><br>
+        <div class="legend-block">
+          <h2>Legend</h2>
+          <h4><span class="male">&#x25CF;</span> = Male</h4>
+          <h4><span class="female">&#x25CF;</span> = Female</h4>
+        </div>
         <div id="vis1"></div>
     </div>
 
@@ -58,7 +80,7 @@
         var y = d3.scaleLinear().range([height, 0]);
 
         var xVal = "year";
-        var yVal = "percent retention (Blue=Male; Pink=Female)";
+        var yVal = "percent retention";
         var yFemaleVal = "FemaleRetentionRate";
         var yMaleVal = "MaleRetentionRate";
 
@@ -121,10 +143,6 @@
                     .attr("text-anchor", "middle")
                     .style("font-size", "17px")
                     .text(key)
-
-                // Add legend
-                var legend = svg.selectAll(".legend")
-                                .data()
             })
         }
 
@@ -154,8 +172,8 @@
                .on("mouseover", function(d) {
                  div.transition()
                    .duration(200)
-                   .style("opacity", .9);
-                 div.html(d.year + "<br/>" + "MaleRetentionRate" + ": " + precise(d.MaleRetentionRate) + "<br/>" + "Female Retention Rate" + ": " + precise(d.FemaleRetentionRate))
+                   .style("opacity", .95);
+                 div.html(d.year + "<br/><b>MaleRetentionRate</b>: " + precise(d.MaleRetentionRate) + "<br/><b>Female Retention Rate</b>: " + precise(d.FemaleRetentionRate))
                    .style("left", (d3.event.pageX) + "px")
                    .style("top", (d3.event.pageY - 28) + "px");
                  })

@@ -29,7 +29,6 @@
             position: absolute;
             text-align: center;
             top: 250px;
-            width: 50px;
             z-index: 10;
         }
     </style>
@@ -151,7 +150,7 @@
             // https://bl.ocks.org/cflavs/ff1c6005fd7edad32641
             .on("mouseover", function(d){
                 d3.select(this).attr('d', arcOver);
-                tooltip.select('.count').html(d.data.count);
+                tooltip.select('.count').html("<b>" + d.data.ethnicity + "</b><br />Total: " + d.data.count);
                 tooltip.style('display', 'block');
             })
             .on("mouseleave", function(){
